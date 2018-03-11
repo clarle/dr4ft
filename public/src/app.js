@@ -1,7 +1,8 @@
 /*global eio */
+import React from "react";
+
 import _ from "Lib/utils";
 import EventEmitter from "Lib/ee";
-import {STRINGS} from "./config";
 
 function message(msg) {
   let args = JSON.parse(msg);
@@ -13,9 +14,12 @@ let App = {
 
   state: {
     id: null,
-    name: STRINGS.BRANDING.DEFAULT_USERNAME,
-
+    name: "dr4fter",
+    SITE_NAME: <span>DR<img src='4.png' alt='4'/>FT</span>,
+    SITE_TITLE: "draft.info",
     serverVersion: null,
+    MOTD: [],
+
     numUsers: 0,
     numPlayers: 0,
     numActiveGames: 0,
@@ -65,6 +69,7 @@ let App = {
   },
   init(router) {
     App.on("set", App.set);
+    App.on("config", App.config);
     App.on("error", App.error);
     App.on("route", App.route);
 
@@ -130,6 +135,10 @@ let App = {
   set(state) {
     Object.assign(App.state, state);
     App.update();
+  },
+  config(conf) {
+    document.title = conf.SITE_TITLE;
+    Object.assign(App.state, conf);
   },
   update() {
     if(App.component) {

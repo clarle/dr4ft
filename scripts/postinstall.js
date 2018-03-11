@@ -1,6 +1,6 @@
 /* eslint no-console: "off" */
 const fs = require("fs");
-const configFiles = ["config.client.js", "config.server.js"];
+const serverConfig = require("../src/config");
 const allSets = require("../src/make/allsets");
 
 // Download Allsets.json
@@ -21,15 +21,6 @@ if (!fs.existsSync(libDir)) {
   fs.createReadStream("node_modules/engine.io-client/engine.io.js").pipe(fs.createWriteStream(`${libDir}/engine.io.js`));
   fs.createReadStream("node_modules/normalize.css/normalize.css").pipe(fs.createWriteStream(`${libDir}/normalize.css`));
 }
-
-console.log("Installing configurations...");
-configFiles.forEach(config => {
-  if(!fs.existsSync(config)) {
-    fs.copyFileSync(`config/${config}.default`, config);
-  }
-});
-
-const serverConfig = require("../config.server");
 
 // Create the log dir
 if(!fs.existsSync(serverConfig.LOGDIR)) {

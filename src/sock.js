@@ -1,6 +1,5 @@
 let {EventEmitter} = require("events");
-let {STRINGS} = require("../config.server");
-
+const config = require("./config");
 // All sockets currently connected to the server.
 let allSocks = [];
 
@@ -29,10 +28,9 @@ class Sock extends EventEmitter {
   constructor(ws) {
     super();
     this.ws = ws;
-    var {id="", name=STRINGS.BRANDING.DEFAULT_USERNAME} = ws.request._query;
+    var {id="", name=config.DEFAULT_USERNAME} = ws.request._query;
     this.id = id.slice(0, 25);
     this.name = name.slice(0, 15);
-    //var ip = ws.request.connection.remoteAddress
     var ip = ws.request.headers["x-forwarded-for"];
     this.ip = ip;
 

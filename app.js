@@ -1,6 +1,6 @@
 require("log-timestamp");
 const logger = require("./src/logger");
-const config = require("./config.server");
+const config = require("./src/config");
 const http = require("http");
 const eio = require("engine.io");
 const router = require("./src/router");

@@ -28,11 +28,8 @@ const VERSION =
 
 module.exports = {
   PORT: process.env.PORT || 1337,
-  VERSION,
-  STRINGS: {
-    BRANDING: {
-      DEFAULT_USERNAME: "dr4fter",
-    }
-  },
+  VERSION: process.env.VERSION || VERSION,
+  SITE_TITLE: process.env.SITE_TITLE ||["dr4ft", "info"].join("."),
+  MOTD: process.env.MOTD || [],
   LOGDIR: process.env.LOGDIR || "./data/log/"
 };

@@ -1,13 +1,12 @@
 import React from "react";
 
-import {STRINGS} from "Src/config";
 import {Spaced} from "Src/utils";
 import App from "Src/app";
 
 const Header = () => (
   <header>
     <h1 className="lobby-header">
-      {STRINGS.BRANDING.SITE_NAME}
+      {App.state.SITE_NAME}
     </h1>
     <ServerInfo />
     <ApplicationError />
