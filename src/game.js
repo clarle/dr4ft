@@ -370,10 +370,28 @@ module.exports = class Game extends Room {
 
     this.renew();
 
-
     switch (this.type) {
     case "draft":
+      for (const p of players) {
+        p.useTimer = useTimer;
+        p.timerLength = timerLength;
+      }
+
+      if (addBots)
+        while (players.length < this.seats)
+          players.push(new Bot);
+
+      if (shufflePlayers)
+        _.shuffle(players);
+      
       this.pool = await Pool.draft(src, players.length);
+      Game.broadcastGameInfo();
+
+      players.forEach((p, i) => {
+        p.on("pass", this.pass.bind(this, p));
+        p.send("set", { self: i });
+      });
+      this.startRound();
       break;
 
     case "sealed":
@@ -399,48 +417,5 @@ module.exports = class Game extends Room {
 
     default: throw new Error(`type ${this.type} not supported.`);
     }
-
-
-    console.log(`${this.type} using ${this.packsInfo} game ${this.id} started with ${this.players.length} players`);
-    Game.broadcastGameInfo();
-
-    // if (/sealed/.test(this.type)) {
-    //   this.round = -1;
-    //   var pools = Pool(src, players.length, true);
-    //   for (p of players) {
-    //     p.pool = pools.pop();
-    //     p.send("pool", p.pool);
-    //     p.send("set", { round: -1 });
-    //   }
-    //   console.log(`${this.type} using ${this.packsInfo} game ${this.id} started with ${this.players.length} players`);
-    //   Game.broadcastGameInfo();
-    //   return;
-    // }
-
-    for (const p of players) {
-      p.useTimer = useTimer;
-      p.timerLength = timerLength;
-    }
-
-    console.log(`${this.type} using ${this.packsInfo} game ${this.id} started with ${this.players.length} players and ${this.seats} seats`);
-    Game.broadcastGameInfo();
-    if (addBots)
-      while (players.length < this.seats)
-        players.push(new Bot);
-
-    if (shufflePlayers)
-      _.shuffle(players);
-
-    if (/chaos/.test(this.type)) {
-      // this.pool = Pool(src, players.length, true, true, this.modernOnly, this.totalChaos);
-    }
-    // else
-    //   this.pool = Pool(src, players.length);
-
-    players.forEach((p, i) => {
-      p.on("pass", this.pass.bind(this, p));
-      p.send("set", { self: i });
-    });
-    this.startRound();
   }
 };

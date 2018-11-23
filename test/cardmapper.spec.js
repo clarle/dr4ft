@@ -1,5 +1,5 @@
 /* eslint-env node, mocha */
-const cardMapper = require("../src/card-mapper");
+const cardMapper = require("../src/booster/card-mapper");
 const assert = require("assert");
 const mtg = require("../src/mtg");
 

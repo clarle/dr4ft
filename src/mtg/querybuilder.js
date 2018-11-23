@@ -1,13 +1,12 @@
 const rq = require("request-promise-native");
-const memoize = require("memoizee");
 const config = require("./config.js");
 
-const _get = memoize((type, page, args) => rq({
+const _get = (type, page, args) => rq({
   uri: `${config.endpoint}/${type}`,
   resolveWithFullResponse: true,
   qs: { page, ...args },
   json: true
-}));
+});
 
 const get = type => async args => {
   let page = 1;
@@ -23,11 +22,11 @@ const get = type => async args => {
   const pageSize = headers["page-size"];
   const maxPages = Math.ceil(remainingEls / pageSize);
   const remainingPages = new Array(maxPages).fill();
-  
+
   const otherResponses = await Promise.all(remainingPages.map(() => _get(type, ++page, args)));
-  otherResponses.forEach(({body}) => elements.push(...body[type]));
+  otherResponses.forEach(({ body }) => elements.push(...body[type]));
   return elements;
-  
+
 };
 
 module.exports = type => ({

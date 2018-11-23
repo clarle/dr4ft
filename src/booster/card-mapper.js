@@ -1,5 +1,5 @@
-const _ = require("./_");
-const mtg = require("./mtg");
+const _ = require("../_");
+const mtg = require("../mtg");
 
 const toCard = async ({ set, name, layout, rarity, names, cmc, colors, types, number, supertypes, manaCost, imageUrl, multiverseid }) => {
   rarity = rarity.split(" ")[0].toLowerCase();
