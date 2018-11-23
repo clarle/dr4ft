@@ -25,4 +25,16 @@ describe("Acceptance tests for Pools", () => {
         });
     });
   });
+  describe("can create pool for draft", () => {
+    it("should return an array of cards", () => {
+      pool.draft(["ktk"], 1)
+        .then(ret => {
+          assert.ok(Array.isArray(ret));
+        });
+    });
+    it("should return an array of length equal to sets number per player", async () => {
+      const ret = await pool.draft(["ktk", "dka"], 2);
+      assert.ok(ret.length === 4 );
+    });
+  });
 });

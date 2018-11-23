@@ -8,6 +8,15 @@ const sealed = async (sets, playersLength) => {
     .map(fetchBoosters));
 };
 
+const draft = async (sets, playersLength) => {
+  sets.reverse(); //TODO: change behavior! Now because game does pool.pop() we have to give him things like that
+  
+  return Promise.all(sets
+    .reduce((acc, set) => acc.concat(new Array(playersLength).fill(set)), []) //TODO: change to flatMap when available in Node
+    .map(boosterProvider));
+};
+
 module.exports = {
-  sealed
+  sealed,
+  draft
 };

@@ -373,6 +373,7 @@ module.exports = class Game extends Room {
 
     switch (this.type) {
     case "draft":
+      this.pool = await Pool.draft(src, players.length);
       break;
 
     case "sealed":
@@ -416,7 +417,7 @@ module.exports = class Game extends Room {
     //   return;
     // }
 
-    for (p of players) {
+    for (const p of players) {
       p.useTimer = useTimer;
       p.timerLength = timerLength;
     }
@@ -431,10 +432,10 @@ module.exports = class Game extends Room {
       _.shuffle(players);
 
     if (/chaos/.test(this.type)) {
-      this.pool = Pool(src, players.length, true, true, this.modernOnly, this.totalChaos);
+      // this.pool = Pool(src, players.length, true, true, this.modernOnly, this.totalChaos);
     }
-    else
-      this.pool = Pool(src, players.length);
+    // else
+    //   this.pool = Pool(src, players.length);
 
     players.forEach((p, i) => {
       p.on("pass", this.pass.bind(this, p));
