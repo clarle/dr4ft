@@ -338,9 +338,9 @@ module.exports = class Game extends Room {
     this.packCount = players.length;
     this.delta *= -1;
 
-    for (var p of players)
-      if (!p.isBot)
-        p.getPack(this.pool.pop());
+    players
+      .filter(player => !player.isBot)
+      .forEach(player => player.getPack(this.pool.shift()));
 
     //let the bots play
     this.meta = () => { };
@@ -350,7 +350,7 @@ module.exports = class Game extends Room {
       index -= this.delta;
       p = _.at(players, index);
       if (p.isBot)
-        p.getPack(this.pool.pop());
+        p.getPack(this.pool.shift());
     }
     this.meta = Game.prototype.meta;
     this.meta({ round: this.round });
