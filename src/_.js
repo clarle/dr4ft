@@ -27,7 +27,7 @@ module.exports = {
   },
   choose(n, arr) {
     // arr.slice(0) copies the entire array
-    if (n === 0)
+    if (n === 0 || arr.length === 0)
       return [];
 
     // http://en.wikipedia.org/wiki/Fisher–Yates_shuffle

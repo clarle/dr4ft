@@ -11,3 +11,5 @@ config.client.js
 config.server.js
 
 built/
+.nyc_output/
+coverage/

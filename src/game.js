@@ -7,11 +7,11 @@ let Sock = require("./sock");
 
 let SECOND = 1000;
 let MINUTE = 1000 * 60;
-let HOUR   = 1000 * 60 * 60;
+let HOUR = 1000 * 60 * 60;
 
 let games = {}
 
-;(function playerTimer() {
+  ; (function playerTimer() {
   for (var id in games) {
     var game = games[id];
     if (game.round < 1)
@@ -23,7 +23,7 @@ let games = {}
   setTimeout(playerTimer, SECOND);
 })()
 
-;(function gameTimer() {
+; (function gameTimer() {
   var now = Date.now();
   for (var id in games)
     if (games[id].expires < now)
@@ -33,13 +33,13 @@ let games = {}
 })();
 
 module.exports = class Game extends Room {
-  constructor({id, title, seats, type, sets, cube, isPrivate, fourPack, modernOnly, totalChaos}) {
-    super({isPrivate});
+  constructor({ id, title, seats, type, sets, cube, isPrivate, fourPack, modernOnly, totalChaos }) {
+    super({ isPrivate });
     this.modernOnly = modernOnly;
     this.totalChaos = totalChaos;
 
     if (sets) {
-      if (fourPack) { sets = sets.slice(0,4); }
+      if (fourPack) { sets = sets.slice(0, 4); }
       if (type != "chaos") {
         Object.assign(this, {
           sets,
@@ -54,7 +54,8 @@ module.exports = class Game extends Room {
     }
 
     var gameID = _.id();
-    Object.assign(this, { title, seats, type, isPrivate,
+    Object.assign(this, {
+      title, seats, type, isPrivate,
       delta: -1,
       hostID: id,
       id: gameID,
@@ -191,7 +192,7 @@ module.exports = class Game extends Room {
       j = players[1],
       l = this.players.length;
 
-    if( j < 0 || j >= l  )
+    if (j < 0 || j >= l)
       return;
 
     [this.players[i], this.players[j]] = [this.players[j], this.players[i]];
@@ -238,7 +239,7 @@ module.exports = class Game extends Room {
     this.meta();
   }
 
-  meta(state={}) {
+  meta(state = {}) {
     state.players = this.players.map(p => ({
       hash: p.hash,
       name: p.name,
@@ -294,8 +295,9 @@ module.exports = class Game extends Room {
     }
     var jsonfile = require("jsonfile");
     var file = "./data/cap.json";
-    jsonfile.writeFile(file, draftcap, {flag: "a"}, function (err) {
-      if (err) console.error(err);});
+    jsonfile.writeFile(file, draftcap, { flag: "a" }, function (err) {
+      if (err) console.error(err);
+    });
 
     this.renew();
     this.round = -1;
@@ -323,7 +325,7 @@ module.exports = class Game extends Room {
       for (var p of this.players) {
         p.cap.packs[this.round] = p.picks;
         p.picks = [];
-        if(!p.isBot) {
+        if (!p.isBot) {
           p.draftLog.round[this.round] = p.draftLog.pack;
           p.draftLog.pack = [];
         }
@@ -332,7 +334,7 @@ module.exports = class Game extends Room {
     if (this.round++ === this.rounds)
       return this.end();
 
-    var {players} = this;
+    var { players } = this;
     this.packCount = players.length;
     this.delta *= -1;
 
@@ -341,7 +343,7 @@ module.exports = class Game extends Room {
         p.getPack(this.pool.pop());
 
     //let the bots play
-    this.meta = ()=>{};
+    this.meta = () => { };
     var index = players.findIndex(p => !p.isBot);
     var count = players.length;
     while (--count) {
@@ -359,28 +361,60 @@ module.exports = class Game extends Room {
     this.meta();
   }
 
-  start({addBots, useTimer, timerLength, shufflePlayers}) {
+  async start({ addBots, useTimer, timerLength, shufflePlayers }) {
     var src = this.cube ? this.cube : this.sets;
-    var {players} = this;
-    var p;
+    var { players } = this;
 
     if (!players.every(x => x.isReadyToStart))
       return;
 
     this.renew();
 
-    if (/sealed/.test(this.type)) {
+
+    switch (this.type) {
+    case "draft":
+      break;
+
+    case "sealed":
+      this.pools = await Pool.sealed(this.sets, players.length);
       this.round = -1;
-      var pools = Pool(src, players.length, true);
-      for (p of players) {
-        p.pool = pools.pop();
-        p.send("pool", p.pool);
-        p.send("set", { round: -1 });
+      for (const player of players) {
+        player.pool = this.pools.pop();
+        player.send("pool", player.pool);
+        player.send("set", { round: this.round });
       }
       console.log(`${this.type} using ${this.packsInfo} game ${this.id} started with ${this.players.length} players`);
       Game.broadcastGameInfo();
       return;
+
+    case "cube draft":
+      break;
+
+    case "cube sealed":
+      break;
+
+    case "chaos":
+      break;
+
+    default: throw new Error(`type ${this.type} not supported.`);
     }
+
+
+    console.log(`${this.type} using ${this.packsInfo} game ${this.id} started with ${this.players.length} players`);
+    Game.broadcastGameInfo();
+
+    // if (/sealed/.test(this.type)) {
+    //   this.round = -1;
+    //   var pools = Pool(src, players.length, true);
+    //   for (p of players) {
+    //     p.pool = pools.pop();
+    //     p.send("pool", p.pool);
+    //     p.send("set", { round: -1 });
+    //   }
+    //   console.log(`${this.type} using ${this.packsInfo} game ${this.id} started with ${this.players.length} players`);
+    //   Game.broadcastGameInfo();
+    //   return;
+    // }
 
     for (p of players) {
       p.useTimer = useTimer;
@@ -393,7 +427,7 @@ module.exports = class Game extends Room {
       while (players.length < this.seats)
         players.push(new Bot);
 
-    if(shufflePlayers)
+    if (shufflePlayers)
       _.shuffle(players);
 
     if (/chaos/.test(this.type)) {
