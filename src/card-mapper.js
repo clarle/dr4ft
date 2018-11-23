@@ -48,12 +48,14 @@ const toCard = async ({ set, name, layout, rarity, names, cmc, colors, types, nu
     name,
     names: names,
     color,
+    rarity,
     type: types[types.length - 1],
     layout: layout,
     cmc: cmc || 0,
     manaCost: manaCost || "",
     isDoubleFaced: /^double-faced$/i.test(layout),
     supertypes: supertypes || [],
+    url: picUrl,
     sets: {
       [set]: {
         rarity,

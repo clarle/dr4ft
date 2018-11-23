@@ -1,6 +1,9 @@
 const boosterProvider = require("./booster");
 
-const fetchBoosters = sets => Promise.all(sets.map(boosterProvider));
+const fetchBoosters = async sets => {
+  const boosters = await Promise.all(sets.map(boosterProvider));
+  return boosters.reduce((acc, booster) => [...acc, ...booster] , []);
+};
 
 const sealed = async (sets, playersLength) => {
   return Promise.all(new Array(playersLength)
