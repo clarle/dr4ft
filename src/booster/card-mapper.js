@@ -1,7 +1,6 @@
 const _ = require("../_");
-const mtg = require("../mtg");
 
-const toCard = async ({ set, name, layout, rarity, names, cmc, colors, types, number, supertypes, manaCost, imageUrl, multiverseid }) => {
+const toCard = ({ set, name, layout, rarity, names, cmc, colors, types, number, supertypes, manaCost, imageUrl, multiverseid }, cards) => {
   rarity = rarity.split(" ")[0].toLowerCase();
 
   //Fix GRN guilgate names
@@ -26,10 +25,7 @@ const toCard = async ({ set, name, layout, rarity, names, cmc, colors, types, nu
   name = _.ascii(name);
 
   if (/^split$|^aftermath$/i.test(layout)) {
-    const [pairedCard] = await mtg.card.where({
-      set,
-      number: `${number}`.replace(/a/, "b")
-    });
+    const [pairedCard] = cards.filter(card => card.number === `${number}`.replace(/a/, "b"));
     cmc += pairedCard.cmc;
     if(colors !== pairedCard.colors) {
       colors.push(...pairedCard.colors);
